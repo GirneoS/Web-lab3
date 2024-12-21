@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <h:outputScript name="https://code.jquery.com/jquery-3.7.1.min.js"/>
+        <h:outputStylesheet name="css/start-page-styles.css"/>
+    </h:head>
+    <h:body>
+        <header>
+            <p class="header-text">Var: 85234</p>
+            <p class="header-text">Ожегов Никита Андреевич</p>
+            <p class="header-text">P3217</p>
+        </header>
+        <main>
+            <h:form id="form">
+                <canvas id="clock" width="350" height="350"></canvas>
+                <h:commandButton action="main-page" value="Главная страница" styleClass="go-to-main-page-btn"/>
+            </h:form>
+        </main>
+    </h:body>
+    <h:outputScript name="js/clock.js"/>
+</html>

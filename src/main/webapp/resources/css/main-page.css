@@ -1,0 +1,55 @@
+body{
+    margin: 0;
+    font-family: fantasy;
+    background-color: beige;
+    display: flex;
+    justify-content: space-between;
+}
+#main-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+.go-to-start-page-btn{
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: indianred;
+    color: white;
+}
+#main-form\:set-r-btn{
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: black;
+    color: white;
+}
+#middle-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+#result-table{
+    width: 50vh !important;
+    font-family: fantasy !important;
+    background-color: indianred !important;
+    color: white;
+}
+#result-table_paginator_top{
+    display: none !important;
+}
+#submit-btn{
+    margin-top: 20px;
+}
+.x-option{
+    text-decoration: none;
+    color: grey;
+}
+.selected{
+    color: chartreuse;
+}
+#canvas{
+    border: solid black 1px;
+}
