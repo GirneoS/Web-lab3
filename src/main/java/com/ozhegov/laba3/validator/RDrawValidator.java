@@ -14,7 +14,7 @@ public class RDrawValidator implements Validator {
         try {
             double r = (double) o;
             if (r < 2 || r > 5) {
-                throw new ValidatorException(new FacesMessage("Радиус может быть в диапазоне [2,5"));
+                throw new ValidatorException(new FacesMessage("Радиус может быть в диапазоне [2,5]"));
             }
         }catch(NumberFormatException e){
             throw new ValidatorException(new FacesMessage("Радиус может быть только числом!!!"));
