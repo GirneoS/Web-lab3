@@ -6,14 +6,12 @@
     <persistence-unit name="default" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>com.ozhegov.laba3.model.Point</class>
-        <!-- Database connection settings -->
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
             <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5433/studs"/>
             <property name="jakarta.persistence.jdbc.user" value="s413030"/>
             <property name="jakarta.persistence.jdbc.password" value="73wGFMGgicv8sA5Z"/>
 
-            <!-- Hibernate специфичные параметры -->
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.format_sql" value="true"/>

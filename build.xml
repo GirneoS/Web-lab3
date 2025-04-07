@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Laba3" default="build" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+    
+    <!-- Загрузка свойств -->
+    <property file="build.properties"/>
+    
+    <!-- Загрузка Ivy -->
+    <target name="download-ivy" unless="skip.download">
+        <mkdir dir="${ivy.jar.dir}"/>
+        <get src="https://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+             dest="${ivy.jar.file}" usetimestamp="true"/>
+    </target>
+    
+    <!-- Инициализация Ivy -->
+    <target name="init-ivy" depends="download-ivy">
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
+        </path>
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+    </target>
+    
+    <!-- Получение зависимостей -->
+    <target name="resolve" depends="init-ivy">
+        <ivy:retrieve pattern="lib/[artifact]-[revision](-[classifier]).[ext]"/>
+    </target>
+    
+    <!-- Определение путей -->
+    <path id="compile.classpath">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+    
+    <path id="test.classpath">
+        <path refid="compile.classpath"/>
+        <pathelement location="${classes.dir}"/>
+        <pathelement location="${test.classes.dir}"/>
+    </path>
+
+    <!-- Инициализация -->
+    <target name="init" depends="resolve">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${test.classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${doc.dir}"/>
+        <mkdir dir="${reports.dir}"/>
+    </target>
+
+    <!-- Компиляция исходного кода -->
+    <target name="compile" depends="init">
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" debug="true" includeantruntime="false">
+            <classpath refid="compile.classpath"/>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${resources.dir}" erroronmissingdir="false"/>
+        </copy>
+    </target>
+
+    <!-- Сборка JAR-файла -->
+    <target name="build" depends="compile">
+        <manifest file="${manifest.file}">
+            <attribute name="Main-Class" value="${main.class}"/>
+            <attribute name="Implementation-Version" value="${project.version}"/>
+            <attribute name="Class-Path" value="${classpath.manifest}"/>
+        </manifest>
+        <jar destfile="${dist.dir}/${jar.name}" manifest="${manifest.file}">
+            <fileset dir="${classes.dir}"/>
+        </jar>
+    </target>
+
+    <!-- Очистка -->
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- Запуск тестов -->
+    <target name="test" depends="build">
+        <javac srcdir="${test.dir}" destdir="${test.classes.dir}" debug="true" includeantruntime="false">
+            <classpath refid="test.classpath"/>
+        </javac>
+        <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+            <classpath>
+                <fileset dir="lib" includes="**/*.jar"/>
+            </classpath>
+        </taskdef>
+        <junit printsummary="yes" haltonfailure="yes" fork="true">
+            <classpath>
+                <path refid="test.classpath"/>
+                <fileset dir="lib" includes="**/*.jar"/>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest todir="${reports.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- Копирование по SCP -->
+    <target name="scp" depends="build">
+        <scp file="${dist.dir}/${jar.name}" 
+             todir="${scp.user}@${scp.host}:${scp.path}"
+             port="${scp.port}"
+             keyfile="${user.home}/.ssh/id_rsa"
+             trust="true"/>
+    </target>
+
+    <!-- Native2ASCII преобразование -->
+    <target name="native2ascii">
+        <native2ascii src="${resources.dir}" 
+                     dest="${build.dir}/resources"
+                     encoding="UTF-8"
+                     includes="**/*.properties"/>
+    </target>
+
+    <!-- XML валидация -->
+    <target name="xml">
+        <xmlvalidate lenient="false">
+            <fileset dir=".">
+                <include name="**/*.xml"/>
+                <exclude name=".idea/**"/>
+            </fileset>
+        </xmlvalidate>
+    </target>
+
+    <!-- Документация и хеши -->
+    <target name="doc" depends="build">
+        <javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
+        <checksum file="${dist.dir}/${jar.name}" algorithm="MD5" property="md5.hash"/>
+        <checksum file="${dist.dir}/${jar.name}" algorithm="SHA-1" property="sha1.hash"/>
+        <manifest file="${manifest.file}" mode="update">
+            <attribute name="MD5-Checksum" value="${md5.hash}"/>
+            <attribute name="SHA1-Checksum" value="${sha1.hash}"/>
+        </manifest>
+        <jar destfile="${dist.dir}/${jar.name}" manifest="${manifest.file}" update="true">
+            <fileset dir="${doc.dir}"/>
+        </jar>
+    </target>
+
+    <!-- Воспроизведение музыки -->
+    <target name="music" depends="build">
+        <sound>
+            <success source="${build.complete.sound}"/>
+        </sound>
+    </target>
+
+    <!-- SVN diff и commit -->
+    <target name="diff">
+        <exec executable="svn" outputproperty="svn.status">
+            <arg value="status"/>
+        </exec>
+        <condition property="should.commit">
+            <contains string="${svn.status}" substring="${svn.monitored.classes}"/>
+        </condition>
+        <antcall target="do-commit"/>
+    </target>
+
+    <target name="do-commit" if="should.commit">
+        <exec executable="svn">
+            <arg value="commit"/>
+            <arg value="-m"/>
+            <arg value="Automatic commit by Ant build"/>
+        </exec>
+    </target>
+
+    <!-- История SVN -->
+    <target name="history">
+        <trycatch>
+            <try>
+                <antcall target="compile"/>
+            </try>
+            <catch>
+                <script language="javascript">
+                    var svn = project.createTask("exec");
+                    svn.setExecutable("svn");
+                    
+                    // Получаем текущую ревизию
+                    var log = project.createTask("exec");
+                    log.setExecutable("svn");
+                    log.setOutputproperty("svn.current.revision");
+                    log.setFailonerror(false);
+                    log.createArg().setValue("info");
+                    log.createArg().setValue("--show-item");
+                    log.createArg().setValue("revision");
+                    log.execute();
+                    
+                    var currentRevision = parseInt(project.getProperty("svn.current.revision"));
+                    var workingRevision = -1;
+                    
+                    // Перебираем ревизии
+                    for(var i = currentRevision; i > 0; i--) {
+                        svn.createArg().setValue("update");
+                        svn.createArg().setValue("-r");
+                        svn.createArg().setValue(i.toString());
+                        svn.setFailonerror(false);
+                        
+                        if(svn.execute() == 0) {
+                            // Пробуем скомпилировать
+                            var compile = project.createTask("antcall");
+                            compile.setTarget("compile");
+                            if(compile.execute() == 0) {
+                                workingRevision = i;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(workingRevision > 0) {
+                        // Создаем diff между рабочей ревизией и следующей
+                        var diff = project.createTask("exec");
+                        diff.setExecutable("svn");
+                        diff.createArg().setValue("diff");
+                        diff.createArg().setValue("-r");
+                        diff.createArg().setValue(workingRevision + ":" + (workingRevision + 1));
+                        diff.setOutput(new java.io.File("revision_diff.txt"));
+                        diff.execute();
+                    }
+                </script>
+            </catch>
+        </trycatch>
+    </target>
+
+    <!-- Альтернативное окружение -->
+    <target name="env" depends="build">
+        <java jar="${dist.dir}/${jar.name}" fork="true" jvm="${alt.java.home}/bin/java">
+            <jvmarg line="${jvm.args}"/>
+        </java>
+    </target>
+
+    <!-- Отчет о тестах -->
+    <target name="report" depends="test">
+        <exec executable="git" failonerror="true">
+            <arg value="add"/>
+            <arg value="${reports.dir}"/>
+        </exec>
+        <exec executable="git">
+            <arg value="commit"/>
+            <arg value="-m"/>
+            <arg value="Adding test reports"/>
+        </exec>
+    </target>
+
+    <!-- Альтернативная версия -->
+    <target name="alt" depends="build">
+        <copy todir="${build.dir}/alt-src">
+            <fileset dir="${src.dir}"/>
+            <filterchain>
+                <replaceregexp>
+                    <regexp pattern="${class.pattern.from}"
+                           replace="${class.pattern.to}"/>
+                    <regexp pattern="${variable.pattern.from}"
+                           replace="${variable.pattern.to}"/>
+                </replaceregexp>
+            </filterchain>
+        </copy>
+        <antcall target="build">
+            <param name="src.dir" value="${build.dir}/alt-src"/>
+            <param name="jar.name" value="alt-${jar.name}"/>
+        </antcall>
+    </target>
+
+</project> 

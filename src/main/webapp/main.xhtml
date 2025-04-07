@@ -19,28 +19,28 @@
             </h:commandLink>
         </ui:repeat>
 
-        <p:outputLabel for="set-y" value="Координата Y"/>
-        <p:inputText id="set-y" value="#{resultBean.point.y}" required="true" requiredMessage="Координата Y должна быть заполнена!" converter="jakarta.faces.Double" validator="numberValidator">
+        <p:outputLabel for="set-y" value="#{msg.main_page_set_y_label}"/>
+        <p:inputText id="set-y" value="#{resultBean.point.y}" required="true" requiredMessage="#{msg.main_page_set_y_error}" converter="jakarta.faces.Double" validator="numberValidator">
             <f:validateLongRange minimum="-3" maximum="3"/>
         </p:inputText>
         <p:message for="set-y" style="color: red;"/>
 
-        <p:outputLabel for="set-r" value="Радиус"/>
+        <p:outputLabel for="set-r" value="#{msg.main_page_set_r_label}"/>
 
         <div>
-            <p:inputText id="set-r" value="#{resultBean.point.r}" required="true" requiredMessage="Радиус должен быть задан!" converter="jakarta.faces.Double" validator="numberValidator"/>
+            <p:inputText id="set-r" value="#{resultBean.point.r}" required="true" requiredMessage="#{msg.main_page_set_r_error}" converter="jakarta.faces.Double" validator="numberValidator"/>
             <p:message for="set-r" style="color: red;"/>
-            <p:commandButton value="установить" id="set-r-btn" onclick="false"/>
+            <p:commandButton value="#{msg.main_page_set_r_button}" id="set-r-btn" onclick="false"/>
         </div>
 
-        <p:commandButton id="submit-btn" value="Отправить" action="#{resultBean.savePoint()}" ajax="true" update="@form result-table"/>
+        <p:commandButton id="submit-btn" value="#{msg.main_page_submit_button}" action="#{resultBean.savePoint()}" ajax="true" update="@form result-table"/>
     </h:form>
     <div id="middle-container">
         <p:outputPanel id="canvas-panel">
             <canvas id="canvas" width="400" height="400"></canvas>
         </p:outputPanel>
         <h:form id="go-to-start-page-form">
-            <h:commandButton action="start-page" value="Стартовая страница" styleClass="go-to-start-page-btn"/>
+            <h:commandButton action="start-page" value="#{msg.main_page_navigation_button}" styleClass="go-to-start-page-btn"/>
         </h:form>
 
     </div>

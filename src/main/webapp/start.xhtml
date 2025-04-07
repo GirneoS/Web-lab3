@@ -12,13 +12,13 @@
     <h:body>
         <header>
             <p class="header-text">Var: 85234</p>
-            <p class="header-text">Ожегов Никита Андреевич</p>
+            <p class="header-text">"#{msg.author}"</p>
             <p class="header-text">P3217</p>
         </header>
         <main>
             <h:form id="form">
                 <canvas id="clock" width="350" height="350"></canvas>
-                <h:commandButton action="main-page" value="Главная страница" styleClass="go-to-main-page-btn"/>
+                <h:commandButton action="main-page" value="#{msg.start_page_navigation_button}" styleClass="go-to-main-page-btn"/>
             </h:form>
         </main>
     </h:body>

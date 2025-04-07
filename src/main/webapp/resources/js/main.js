@@ -11,13 +11,6 @@ $(document).ready(function(){
     const set_r_btn = document.getElementById("main-form\:set-r-btn");
     set_r_btn.addEventListener("click",()=>fillDiagram());
 
-    // const table_btns = $('#result-table_paginator_bottom > a');
-    // table_btns.each(function () {
-    //     $(this).click(()=>{
-    //         fillDiagram();
-    //     })
-    // })
-
     const canvas = document.getElementById("canvas");
     canvas.onmousedown = mouseHandler;
     function mouseHandler(evt) {
@@ -37,7 +30,7 @@ $(document).ready(function(){
                 }
             }
         }else{
-            toastr.error("r должен быть в диапазоне [2,5]");
+            toastr.error("#{msg.main.page.set.r.error.range}");
         }
     }
 });
@@ -88,7 +81,6 @@ function fillDiagram(){
 
         canvas.beginPath();
         canvas.fillStyle = "black";
-        //отметки на горизонтальной линии
         canvas.moveTo(200+160*r,197);
         canvas.lineTo(200+160*r,203);
         canvas.moveTo(200+80*r,197);
@@ -98,7 +90,6 @@ function fillDiagram(){
         canvas.moveTo(200-80*r,197);
         canvas.lineTo(200-80*r,203);
 
-        //отметки на вертикальной линии
         canvas.moveTo(197,200-160*r);
         canvas.lineTo(203,200-160*r);
         canvas.moveTo(197,200-80*r);
@@ -122,11 +113,10 @@ function fillDiagram(){
         canvas.stroke();
 
         canvas.rect(201,201,r*160,r*80);
-        //треугольник в 4-й четверти
-        canvas.moveTo(201,199-160*r); //самая верхняя точка
-        canvas.lineTo(360-160*(1-r),201); //самая правая точка
-        canvas.lineTo(201,201); //
-        canvas.lineTo(201,199-160*r); //
+        canvas.moveTo(201,199-160*r); 
+        canvas.lineTo(360-160*(1-r),201); 
+        canvas.lineTo(201,201);
+        canvas.lineTo(201,199-160*r);
 
         canvas.moveTo(199,199);
         canvas.arc(199,199,160*r,Math.PI,3*Math.PI/2,false);
@@ -155,7 +145,7 @@ function drawDots(){
             canvas.beginPath();
             canvas.arc(xCoordinate, yCoordinate, 5, 0, Math.PI * 2);
             canvas.closePath();
-            if(t_body[i].children[3].textContent.trim() === "попал") {
+            if(t_body[i].children[3].textContent.trim() === "#{main.js.got.it}") {
                 canvas.fillStyle = "green";
                 canvas.fill();
             }else {

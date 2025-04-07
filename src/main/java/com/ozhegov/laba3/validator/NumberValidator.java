@@ -7,8 +7,12 @@ import jakarta.faces.validator.FacesValidator;
 import jakarta.faces.validator.Validator;
 import jakarta.faces.validator.ValidatorException;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 @FacesValidator("numberValidator")
 public class NumberValidator implements Validator {
+    private final ResourceBundle bundle = ResourceBundle.getBundle("messages",new Locale("ru"));
     @Override
     public void validate(FacesContext facesContext, UIComponent uiComponent, Object o) throws ValidatorException {
         try{
@@ -17,15 +21,15 @@ public class NumberValidator implements Validator {
             if(id.equals("set-y")){
                 if(param < -3 || param > 3)
                     throw new ValidatorException(
-                            new FacesMessage("Координата Y должна находится в диапазоне [-3; 3]"));
+                            new FacesMessage(bundle.getString("main.page.set.y.error.range")));
             }else {
                 if(param < 2 || param > 5)
                     throw new ValidatorException(
-                            new FacesMessage("Радиус должен находится в диапазоне [2; 5]"));
+                            new FacesMessage(bundle.getString("main.page.set.r.error.range")));
             }
 
         }catch(NumberFormatException e){
-            throw new ValidatorException(new FacesMessage("В поле должно быть указано именно число!"));
+            throw new ValidatorException(new FacesMessage(bundle.getString("main_page_number_exception")));
         }
     }
 }

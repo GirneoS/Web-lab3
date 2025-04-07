@@ -16,4 +16,11 @@
             <to-view-id>/start.xhtml</to-view-id>
         </navigation-case>
     </navigation-rule>
+
+    <application>
+        <resource-bundle>
+            <base-name>messages_ru</base-name>
+            <var>msg</var>
+        </resource-bundle>
+    </application>
 </faces-config>

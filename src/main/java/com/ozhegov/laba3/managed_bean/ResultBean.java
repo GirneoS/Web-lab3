@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +24,7 @@ import java.util.Map;
 public class ResultBean {
     private PointDAO pointDAO = new PointDAO();
     private Point point = new Point();
+    private final ResourceBundle bundle = ResourceBundle.getBundle("messages",new Locale("ru"));
 
     public String savePoint(){
         long timeStart = System.nanoTime();
@@ -61,14 +63,14 @@ public class ResultBean {
         double y = point.getY();
         double r = point.getR();
         if(r < 2 || r > 5 || y < -3 || y > 3)
-            throw new ValidatorException(new FacesMessage("Координата y должна быть в диапазоне [-3,3]!"));
+            throw new ValidatorException(new FacesMessage(bundle.getString("main.page.set.y.error.range")));
 
         double line = y + x -r;
         double circle = Math.pow(x, 2) + Math.pow(y, 2) - Math.pow(r, 2);
 
         if((x<=0 && y>= 0 && circle<=0) || (x>=0 && y>=0 && line<=0) || (x>=0 && y<=0 && x<=r && y>=(-r/2)))
-            point.setResult("попал");
+            point.setResult(bundle.getString("main_js_got_it"));
         else
-            point.setResult("не попал");
+            point.setResult(bundle.getString("main_js_not_got_it"));
     }
 }
